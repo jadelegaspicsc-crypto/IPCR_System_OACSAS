@@ -1,0 +1,15 @@
+IPCR v3 QUICK CHECKLIST
+
+[ ] Create Supabase project
+[ ] Run supabase.sql
+[ ] Create first Auth user
+[ ] Change first user's profile role to admin
+[ ] Copy Supabase URL + anon/publishable key
+[ ] Edit config.js
+[ ] Test locally
+[ ] Deploy to Netlify
+[ ] Test login on Netlify
+[ ] Create employee accounts
+[ ] Assign supervisor/head roles
+[ ] Test Draft -> For Review -> For Approval -> Approved
+[ ] Review RLS/security with ICT/security team before production

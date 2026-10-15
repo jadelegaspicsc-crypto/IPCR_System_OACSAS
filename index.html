@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CSC IPCR Online System v3</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" hidden></div>
+
+  <section id="authView" class="auth-shell">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-mark">CSC</div>
+        <div>
+          <h1>IPCR Online System</h1>
+          <p>Individual Performance Commitment and Review</p>
+        </div>
+      </div>
+      <div id="configWarning" class="alert warning" hidden>
+        Supabase is not configured. Open <code>config.js</code> and enter your Supabase Project URL and anon/publishable key.
+      </div>
+      <form id="loginForm">
+        <label>Email / Username
+          <input id="loginEmail" type="email" autocomplete="username" required placeholder="employee@agency.gov.ph">
+        </label>
+        <label>Password
+          <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Password">
+        </label>
+        <button class="primary full" type="submit">Sign in</button>
+      </form>
+      <button id="forgotPassword" class="link-button">Forgot password?</button>
+      <p class="small muted">v3 uses real Supabase Authentication. There is no hard-coded demo password.</p>
+    </div>
+  </section>
+
+  <section id="appView" hidden>
+    <header class="topbar">
+      <div class="brand compact">
+        <div class="brand-mark">CSC</div>
+        <div>
+          <strong>IPCR Online System</strong>
+          <span>v3</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span id="userBadge" class="user-badge"></span>
+        <button id="logoutBtn" class="secondary">Sign out</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <button class="nav active" data-page="dashboard">Dashboard</button>
+        <button class="nav" data-page="ipcr">My IPCR</button>
+        <button class="nav" data-page="team" id="teamNav" hidden>Team Review</button>
+        <button class="nav" data-page="users" id="usersNav" hidden>User Administration</button>
+      </aside>
+
+      <section class="content">
+        <div id="page-dashboard" class="page"></div>
+        <div id="page-ipcr" class="page" hidden></div>
+        <div id="page-team" class="page" hidden></div>
+        <div id="page-users" class="page" hidden></div>
+      </section>
+    </main>
+  </section>
+
+  <dialog id="ipcrDialog">
+    <div class="dialog-head">
+      <h2 id="ipcrDialogTitle">IPCR</h2>
+      <button id="closeDialog" class="icon-btn">×</button>
+    </div>
+    <form id="ipcrForm">
+      <input type="hidden" id="ipcrId">
+      <div class="grid-3">
+        <label>Year
+          <input id="ipcrYear" type="number" min="2020" max="2100" required>
+        </label>
+        <label>Period
+          <select id="ipcrPeriod">
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+          </select>
+        </label>
+        <label>Employee
+          <input id="ipcrEmployee" readonly>
+        </label>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h3>Performance Commitments</h3>
+          <p class="muted">Based on the IPCR structure reflected in the supplied MC No. 06, s. 2012 workbook.</p>
+        </div>
+        <button type="button" id="addItemBtn" class="secondary">+ Add indicator</button>
+      </div>
+
+      <div class="weights-summary">
+        <span>Core: <b id="coreWeight">0%</b></span>
+        <span>Strategic: <b id="strategicWeight">0%</b></span>
+        <span>Support: <b id="supportWeight">0%</b></span>
+        <span>Total: <b id="totalWeight">0%</b></span>
+      </div>
+
+      <div id="itemsContainer"></div>
+
+      <div class="calc-card">
+        <div><span>Final Average Rating</span><strong id="finalRating">—</strong></div>
+        <div><span>Equivalent Weighted Rating</span><strong id="weightedRating">—</strong></div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="saveDraftBtn" class="secondary">Save draft</button>
+        <button type="button" id="submitBtn" class="primary">Submit for review</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="itemTemplate">
+    <div class="item-card">
+      <div class="item-head">
+        <strong class="item-no"></strong>
+        <button type="button" class="remove-item danger-text">Remove</button>
+      </div>
+      <div class="grid-2">
+        <label>Function
+          <select class="function-type">
+            <option value="core">Core Functions</option>
+            <option value="strategic">Strategic Functions</option>
+            <option value="support">Support Functions</option>
+          </select>
+        </label>
+        <label>Weight
+          <input class="weight" type="number" min="0" max="1" step="0.001" placeholder="e.g. 0.030">
+        </label>
+      </div>
+      <label>Output / Outcome
+        <textarea class="output" rows="2" placeholder="Output / outcome"></textarea>
+      </label>
+      <label>Success Indicators (Targets + Measures)
+        <textarea class="indicator" rows="3" placeholder="Success indicator"></textarea>
+      </label>
+      <label>Actual Accomplishments
+        <textarea class="accomplishment" rows="3" placeholder="Actual accomplishment"></textarea>
+      </label>
+      <div class="rating-grid">
+        <label>Quality (Q)
+          <input class="q" type="number" min="1" max="5" step="0.01" placeholder="1–5">
+        </label>
+        <label>Efficiency (E)
+          <input class="e" type="number" min="1" max="5" step="0.01" placeholder="1–5">
+        </label>
+        <label>Timeliness (T)
+          <input class="t" type="number" min="1" max="5" step="0.01" placeholder="1–5">
+        </label>
+        <label>Average
+          <input class="avg" readonly>
+        </label>
+        <label>Weighted Rating
+          <input class="weighted" readonly>
+        </label>
+      </div>
+      <label>Remarks
+        <textarea class="remarks" rows="2" placeholder="Remarks"></textarea>
+      </label>
+    </div>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
